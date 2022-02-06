@@ -18,14 +18,14 @@ type context struct {
 }
 
 type Algorithm interface {
-	Sort(chan bool, chan bool, chan []float64)
+	Sort(chan bool, chan bool, *[]float64)
 }
 
 func (c *context) SetStrategy(s string) {
 	c.Strategy = mapSupportedAlgorithms[s]
 }
 
-func (c *context) ExecuteStrategy(done, changed chan bool, data chan []float64) (err error) {
+func (c *context) ExecuteStrategy(done, changed chan bool, data *[]float64) (err error) {
 	if c.Strategy != nil {
 		c.Strategy.Sort(done, changed, data)
 	}
