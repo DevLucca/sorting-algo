@@ -6,10 +6,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	randArray "github.com/DevLucca/sorting-algo/utils/random-array"
 	"github.com/c-bata/go-prompt"
-	ui "github.com/gizak/termui/v3"
 )
 
 var (
@@ -60,16 +60,16 @@ func Executor(s string) {
 
 	done, changed := make(chan bool), make(chan bool)
 
-	data := &newArray
-	go ctx.ExecuteStrategy(done, changed, data)
-	go uIRenderer(selectedAlgo, done, changed, data)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
 
-	for done := range done {
-		if done {
-			ui.Close()
-			return
-		}
-	}
+	data := &newArray
+	// fmt.Println(data)
+	go ctx.ExecuteStrategy(done, changed, data)
+	go uIRenderer(wg, selectedAlgo, done, changed, data)
+
+	wg.Wait()
+	// fmt.Println(data)
 }
 
 func checkCommand(args []string) error {
